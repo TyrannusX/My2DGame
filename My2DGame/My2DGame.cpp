@@ -47,14 +47,16 @@ int main()
 		SDL_LOG_PRIORITY_INFO,
 		"Loading character sprite");
 	texture = IMG_LoadTexture(renderer, "randy.png");
-	printf("DEBUG2 %s", SDL_GetError());
 
+	//control flags for player
 	bool movingUp = false;
 	bool movingDown = false;
 	bool movingRight = false;
 	bool movingLeft = false;
 	int playerCurrentPositionX = 100;
 	int playerCurrentPositionY = 100;
+	int speedModifier = 1;
+
 	//main loop
 	while (true)
 	{
@@ -90,6 +92,10 @@ int main()
 						{
 							movingLeft = true;
 						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_LSHIFT)
+						{
+							speedModifier = 2;
+						}
 					}
 					break;
 				case SDL_KEYUP:
@@ -111,6 +117,10 @@ int main()
 						{
 							movingLeft = false;
 						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_LSHIFT)
+						{
+							speedModifier = 1;
+						}
 					}
 					break;
 				default:
@@ -122,24 +132,44 @@ int main()
 		SDL_Rect dest;
 		if (movingUp)
 		{
-			playerCurrentPositionY -= 1;
+			playerCurrentPositionY -= 1 * speedModifier;
 		}
 		if (movingDown)
 		{
-			playerCurrentPositionY += 1;
+			playerCurrentPositionY += 1 * speedModifier;
 		}
 		if (movingRight)
 		{
-			playerCurrentPositionX += 1;
+			playerCurrentPositionX += 1 * speedModifier;
 		}
 		if (movingLeft)
 		{
-			playerCurrentPositionX -= 1;
+			playerCurrentPositionX -= 1 * speedModifier;
+		}
+
+		SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+
+		//restrict player to bounds of screen
+		if (playerCurrentPositionX + dest.w >= 1280)
+		{
+			playerCurrentPositionX = 1280 - dest.w;
+		}
+		if (playerCurrentPositionX < 0)
+		{
+			playerCurrentPositionX = 0;
+		}
+		if (playerCurrentPositionY + dest.h >= 720)
+		{
+			playerCurrentPositionY = 720 - dest.h;
+		}
+		if (playerCurrentPositionY < 0)
+		{
+			playerCurrentPositionY = 0;
 		}
 
 		dest.x = playerCurrentPositionX;
 		dest.y = playerCurrentPositionY;
-		SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
+
 		SDL_RenderCopy(renderer, texture, NULL, &dest);
 
 		//render scene
