@@ -49,6 +49,10 @@ int main()
 	texture = IMG_LoadTexture(renderer, "randy.png");
 	printf("DEBUG2 %s", SDL_GetError());
 
+	bool movingUp = false;
+	bool movingDown = false;
+	bool movingRight = false;
+	bool movingLeft = false;
 	int playerCurrentPositionX = 100;
 	int playerCurrentPositionY = 100;
 	//main loop
@@ -60,38 +64,79 @@ int main()
 
 		//handle input
 		SDL_Event event;
-		SDL_PollEvent(&event);
-		switch (event.type)
+		while (SDL_PollEvent(&event))
 		{
-			case SDL_QUIT:
-				exit(0);
-				break;
-			case SDL_KEYDOWN:
-				/*if (event.key.repeat == 0)
-				{*/
-					if (event.key.keysym.scancode == SDL_SCANCODE_UP)
+			switch (event.type)
+			{
+				case SDL_QUIT:
+					exit(0);
+					break;
+				case SDL_KEYDOWN:
+					if (event.key.repeat == 0)
 					{
-						playerCurrentPositionY -= 1;
+						if (event.key.keysym.scancode == SDL_SCANCODE_UP)
+						{
+							movingUp = true;
+						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_DOWN)
+						{
+							movingDown = true;
+						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
+						{
+							movingRight = true;
+						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
+						{
+							movingLeft = true;
+						}
 					}
-					if (event.key.keysym.scancode == SDL_SCANCODE_DOWN)
+					break;
+				case SDL_KEYUP:
+					if (event.key.repeat == 0)
 					{
-						playerCurrentPositionY += 1;
+						if (event.key.keysym.scancode == SDL_SCANCODE_UP)
+						{
+							movingUp = false;
+						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_DOWN)
+						{
+							movingDown = false;
+						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
+						{
+							movingRight = false;
+						}
+						if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
+						{
+							movingLeft = false;
+						}
 					}
-					if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
-					{
-						playerCurrentPositionX += 1;
-					}
-					if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
-					{
-						playerCurrentPositionX -= 1;
-					}
-				/*}*/
-			default:
-				break;
+					break;
+				default:
+					break;
+			}
 		}
 
 		//draw textures
 		SDL_Rect dest;
+		if (movingUp)
+		{
+			playerCurrentPositionY -= 1;
+		}
+		if (movingDown)
+		{
+			playerCurrentPositionY += 1;
+		}
+		if (movingRight)
+		{
+			playerCurrentPositionX += 1;
+		}
+		if (movingLeft)
+		{
+			playerCurrentPositionX -= 1;
+		}
+
 		dest.x = playerCurrentPositionX;
 		dest.y = playerCurrentPositionY;
 		SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
